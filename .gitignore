@@ -1,0 +1,13 @@
+# macOS
+.DS_Store
+
+# Python
+**/__pycache__/
+*.pyc
+*.pyo
+
+# Skill dependencies (reinstall with: npx skills add)
+.agents/skills/skill-creator/
+
+# Claude local settings
+.claude/settings.local.json

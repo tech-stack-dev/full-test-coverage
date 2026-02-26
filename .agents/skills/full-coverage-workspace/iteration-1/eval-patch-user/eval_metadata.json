@@ -1,0 +1,14 @@
+{
+  "eval_id": 2,
+  "eval_name": "patch-user",
+  "prompt": "Add API tests for my PATCH /api/users/:id endpoint. The handler validates input, checks that the requesting user can only update their own profile (returns 403 for other users), and returns 404 for non-existent users. Here is the handler:\n\n```typescript\n// app/api/users/[id]/route.ts\nexport async function PATCH(request: Request, { params }: { params: { id: string } }) {\n  const session = await getServerSession();\n  if (!session) return Response.json({ error: 'UNAUTHORIZED' }, { status: 401 });\n  \n  const body = await request.json();\n  const parsed = UpdateUserDto.safeParse(body);\n  if (!parsed.success) return Response.json({ error: 'VALIDATION_ERROR' }, { status: 400 });\n  \n  if (session.userId !== params.id) return Response.json({ error: 'FORBIDDEN' }, { status: 403 });\n  \n  const user = await userService.updateUser(params.id, parsed.data);\n  if (!user) return Response.json({ error: 'NOT_FOUND' }, { status: 404 });\n  \n  return Response.json(user, { status: 200 });\n}\n```\n\nAdd API tests only for this endpoint.",
+  "assertions": [
+    "The response selects only the API layer and does NOT write unit or integration or E2E tests",
+    "API tests cover all 5 scenarios: 200 success, 401 unauthorized, 403 forbidden (different user), 404 not found, 400 validation error",
+    "Test file uses Playwright's APIRequestContext (e.g., `request` fixture), not fetch or axios",
+    "The test file creates a test-owned interface or type for the update payload — it does NOT import UpdateUserDto from the backend",
+    "Each test creates its own user (no shared state between tests) using a helper like authenticateUser()",
+    "Cleanup runs in afterEach to delete created users/data even when tests throw",
+    "Test data uses unique values (counter + timestamp or random) to avoid conflicts in parallel runs"
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "expectations": [
+    {
+      "text": "The response selects only the E2E layer and does NOT write unit, integration, or API tests",
+      "passed": true,
+      "evidence": "test_output.md contains only Playwright test code for the login flow. No unit tests or integration tests."
+    },
+    {
+      "text": "A Page Object Model (POM) class is created for the login page with methods and locators using data-testid selectors only (no CSS class selectors or XPath)",
+      "passed": false,
+      "evidence": "No Page Object Model class was created. The test file calls page.getByTestId() directly inline within each test. There is no LoginPage class or equivalent POM."
+    },
+    {
+      "text": "The POM class has at least: a locator for the form, email input, password input, submit button, and error message",
+      "passed": false,
+      "evidence": "No POM class exists. locators appear inline in each test, not as a reusable class."
+    },
+    {
+      "text": "Test for successful login: creates user via API (not via UI), navigates to login page, fills form, submits, asserts redirect to /dashboard using page.waitForURL() or expect(page).toHaveURL()",
+      "passed": false,
+      "evidence": "The 'redirect to /dashboard' test uses page.route() to mock the /api/auth/login response instead of creating a real user via API. Line 28-34: `await page.route('/api/auth/login', async (route) => { await route.fulfill({ status: 200, ... }) })`. This is mocked UI testing, not real API setup."
+    },
+    {
+      "text": "Test for failed login: attempts login with wrong credentials, asserts error message is visible using locator assertion (not page.waitForTimeout)",
+      "passed": true,
+      "evidence": "Test 'should show error message on invalid credentials': mocks 401 response, fills form, `await expect(errorMessage).toBeVisible()`, `await expect(errorMessage).toHaveText('Invalid email or password')`. Uses locator assertions, no waitForTimeout."
+    },
+    {
+      "text": "Test data uses unique values per test (counter/timestamp pattern) — no hardcoded test@example.com",
+      "passed": false,
+      "evidence": "All emails are hardcoded: 'user@example.com', 'admin@example.com', 'wrong@example.com', 'test@example.com', 'nonexistent-e2e@test.com'. No counter or timestamp pattern."
+    },
+    {
+      "text": "Cleanup of created test users runs in afterEach",
+      "passed": false,
+      "evidence": "No afterEach cleanup. Tests use beforeEach only for navigation (await page.goto('/login')). Since no real users are created (all API calls are mocked via page.route()), cleanup is not needed — but this is because the test approach is wrong."
+    }
+  ],
+  "summary": {
+    "passed": 2,
+    "failed": 5,
+    "total": 7,
+    "pass_rate": 0.29
+  },
+  "execution_metrics": {
+    "tool_calls": {"Read": 0, "Write": 2, "Edit": 0, "Bash": 0, "Glob": 0, "Grep": 0},
+    "total_tool_calls": 2,
+    "total_steps": 1,
+    "files_created": ["test_output.md", "transcript.md"],
+    "errors_encountered": 0,
+    "output_chars": 7800,
+    "transcript_chars": 1100
+  },
+  "timing": {
+    "executor_duration_seconds": 56.4,
+    "total_duration_seconds": 56.4
+  },
+  "claims": [
+    {
+      "claim": "Without-skill uses page.route() mocking instead of real API setup",
+      "type": "quality",
+      "verified": true,
+      "evidence": "All tests that require auth mock the API via page.route(). This is a common anti-pattern for E2E tests — it tests the UI in isolation, not the real integrated system."
+    },
+    {
+      "claim": "Without-skill produces 12 tests for a simple login flow",
+      "type": "quality",
+      "verified": true,
+      "evidence": "12 tests in the spec including edge cases like 'clear error on retype', 'network error graceful', 'password input type=password'. The skill reference says 3-5 tests for auth flow. Over-testing with mocked tests inflates the count."
+    }
+  ],
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "reason": "Consider adding an assertion that checks whether page.route() mocking is used — the without_skill agent used mock routes instead of real API setup, which is the key E2E anti-pattern to detect. An assertion like 'No page.route() calls appear in the test spec' would discriminate this."
+      }
+    ],
+    "overall": "2/7 passed. The key failures are: no POM, mocked API (page.route) instead of real createUserViaApi, hardcoded emails, no cleanup."
+  }
+}

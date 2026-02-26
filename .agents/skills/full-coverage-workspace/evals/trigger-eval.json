@@ -1,0 +1,82 @@
+[
+  {
+    "query": "I just finished writing the auth module for our Next.js app — it has a /api/auth/login endpoint, a SessionService class, and a LoginDto validated with Zod. Can you add full test coverage for it?",
+    "should_trigger": true
+  },
+  {
+    "query": "write vitest tests for my UserService — it has createUser, findById, updateUser, deleteUser methods and uses Prisma under the hood. I want to cover all the branches including not-found and permission errors",
+    "should_trigger": true
+  },
+  {
+    "query": "our PATCH /api/products/:id endpoint only has a happy-path test right now. it also needs coverage for 401, 403 (user doesnt own the product), 404 (product missing), and 400 (validation failures). can u help",
+    "should_trigger": true
+  },
+  {
+    "query": "I added a checkout page to our storefront — it has data-testid=checkout-form, data-testid=email-input, data-testid=card-number-input, data-testid=submit-btn. help me write e2e playwright tests for the purchase flow",
+    "should_trigger": true
+  },
+  {
+    "query": "we just refactored the payment processing service to support multi-currency, changed like 4 files. I want to make sure we didnt break anything — need tests that cover the new branches",
+    "should_trigger": true
+  },
+  {
+    "query": "got a code review tomorrow and my new POST /api/invoices endpoint has literally 0 tests. it validates with zod, calls stripe, and writes to postgres. help me add coverage fast",
+    "should_trigger": true
+  },
+  {
+    "query": "I need to improve test coverage for the notifications module — it has a NotificationService that sends emails via sendgrid and logs to the db. right now we have maybe 20% branch coverage",
+    "should_trigger": true
+  },
+  {
+    "query": "can you add unit tests for this calculateShippingCost(weightKg, zone, carrier) utility function? it has like 6 branches for different carrier/zone combos and some error cases for invalid inputs",
+    "should_trigger": true
+  },
+  {
+    "query": "just implemented the organization membership feature — OrganizationService with invite/accept/revoke methods, a /api/organizations/:id/members endpoint, and a Zod schema for the invite dto. what tests do I need and can you write them",
+    "should_trigger": true
+  },
+  {
+    "query": "our login form is missing e2e test coverage — the component at src/app/login/page.tsx has testids on email, password, submit, and error-message. users log in with email+password and get redirected to /home on success",
+    "should_trigger": true
+  },
+  {
+    "query": "can you explain how the testing pyramid works? like when would I choose integration tests over unit tests, and where do E2E tests fit in for a Next.js app",
+    "should_trigger": false
+  },
+  {
+    "query": "my jest tests pass locally but fail on CI with Cannot find module @/lib/prisma. the same import works fine in src/ but not in __tests__/. whats going on",
+    "should_trigger": false
+  },
+  {
+    "query": "how do I use vi.mock to mock an axios instance in vitest? I have a service that wraps axios and I want to intercept the calls in my existing unit tests",
+    "should_trigger": false
+  },
+  {
+    "query": "can you review my existing test suite at src/modules/users/__tests__/ and tell me if the test structure looks good or if there are any anti-patterns I should fix",
+    "should_trigger": false
+  },
+  {
+    "query": "how do I configure playwright to run tests in parallel across 4 workers? my playwright.config.ts currently has workers: 1 and tests are super slow on CI",
+    "should_trigger": false
+  },
+  {
+    "query": "I want to migrate our existing jest test suite to vitest — we have about 200 test files. whats the migration path and what would break",
+    "should_trigger": false
+  },
+  {
+    "query": "one of my playwright e2e tests keeps timing out on the navigation step — page.goto takes 30s and then times out. everything works fine when I run it headed. what could cause this",
+    "should_trigger": false
+  },
+  {
+    "query": "should I use beforeEach or beforeAll to set up the database connection in my integration tests? I want the connection to be shared but I keep getting weird state between tests",
+    "should_trigger": false
+  },
+  {
+    "query": "the test at src/modules/orders/orders.service.test.ts line 42 is failing with 'Expected 3 to equal 4'. the mock is returning the right value when I console.log it. can you help debug",
+    "should_trigger": false
+  },
+  {
+    "query": "I want to add a data-testid attribute to my LoginButton component so QA can find it in their automation scripts. should it be on the button itself or the wrapper div",
+    "should_trigger": false
+  }
+]

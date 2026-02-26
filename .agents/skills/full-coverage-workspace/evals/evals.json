@@ -1,0 +1,52 @@
+{
+  "skill_name": "full-coverage",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I just wrote a notes service with create, read, update, and delete endpoints. Here's the code:\n\n```typescript\n// notes.dto.ts\nimport { z } from 'zod';\nexport const CreateNoteDto = z.object({\n  title: z.string().min(1).max(255),\n  content: z.string().optional(),\n  organizationId: z.string().uuid()\n});\nexport type CreateNoteInput = z.infer<typeof CreateNoteDto>;\n\n// notes.service.ts\nexport class NotesService {\n  constructor(private prisma: PrismaClient) {}\n  async createNote(data: CreateNoteInput, userId: string) {\n    return this.prisma.note.create({ data: { ...data, userId } });\n  }\n  async getNote(id: string, userId: string) {\n    const note = await this.prisma.note.findUnique({ where: { id } });\n    if (!note) throw new NotFoundError('Note not found');\n    if (note.userId !== userId) throw new ForbiddenError('Access denied');\n    return note;\n  }\n  async updateNote(id: string, data: Partial<CreateNoteInput>, userId: string) {\n    const note = await this.getNote(id, userId);\n    return this.prisma.note.update({ where: { id: note.id }, data });\n  }\n  async deleteNote(id: string, userId: string) {\n    await this.getNote(id, userId);\n    return this.prisma.note.delete({ where: { id } });\n  }\n}\n\n// app/api/notes/route.ts\nexport async function POST(request: Request) {\n  const body = await request.json();\n  const parsed = CreateNoteDto.safeParse(body);\n  if (!parsed.success) return Response.json({ error: 'VALIDATION_ERROR', details: parsed.error.flatten() }, { status: 400 });\n  const note = await notesService.createNote(parsed.data, session.userId);\n  return Response.json(note, { status: 201 });\n}\n```\n\nAdd full test coverage for this notes module.",
+      "expected_output": "A complete pyramid-shaped test suite covering: (1) Unit tests with exhaustive Zod field validation (title min/max/missing, organizationId UUID format) and service branch tests with mocked Prisma (notFound branch, forbidden branch for each method); (2) Integration tests with real DB testing all service branches; (3) API tests for the POST /api/notes endpoint covering success, validation error, auth; (4) No E2E tests since there is no browser UI. The skill should explicitly select layers, read reference files, and produce properly structured test files.",
+      "files": [],
+      "expectations": [
+        "The response selects Unit, Integration, and API layers and explicitly states E2E is skipped because no browser UI exists",
+        "Unit tests include exhaustive Zod field tests: title missing/empty/too-long (>255 chars)/valid-boundary (1 char, 255 chars), organizationId invalid UUID, organizationId missing",
+        "Unit tests for NotesService.getNote include: a test for the notFound branch (mock returns null → expect NotFoundError thrown) and a test for the forbidden branch (mock returns note with different userId → expect ForbiddenError thrown)",
+        "Unit tests use vi.mock for Prisma and verify mock was called with exact expected arguments",
+        "Unit tests create a unit factory file (e.g., notes.unit-factory.ts) for generating test data",
+        "Integration tests test service methods with real DB, not just HTTP endpoints",
+        "API tests cover at least: POST success (201), POST with missing title (400 with VALIDATION_ERROR), POST without auth (401)",
+        "All test files follow Arrange-Act-Assert pattern with clear sections",
+        "The response includes a file inventory listing all created test files per layer with run commands"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Add API tests for my PATCH /api/users/:id endpoint. The handler validates input, checks that the requesting user can only update their own profile (returns 403 for other users), and returns 404 for non-existent users. Here is the handler:\n\n```typescript\n// app/api/users/[id]/route.ts\nexport async function PATCH(request: Request, { params }: { params: { id: string } }) {\n  const session = await getServerSession();\n  if (!session) return Response.json({ error: 'UNAUTHORIZED' }, { status: 401 });\n  \n  const body = await request.json();\n  const parsed = UpdateUserDto.safeParse(body);\n  if (!parsed.success) return Response.json({ error: 'VALIDATION_ERROR' }, { status: 400 });\n  \n  if (session.userId !== params.id) return Response.json({ error: 'FORBIDDEN' }, { status: 403 });\n  \n  const user = await userService.updateUser(params.id, parsed.data);\n  if (!user) return Response.json({ error: 'NOT_FOUND' }, { status: 404 });\n  \n  return Response.json(user, { status: 200 });\n}\n```\n\nAdd API tests only for this endpoint.",
+      "expected_output": "API tests using Playwright as HTTP client. Tests should cover: success (200), unauthorized (401), forbidden/wrong user (403), not found (404), validation error (400). The skill should create test-owned payload interfaces (not import backend DTOs), a factory for generating user update data, and cleanup utilities. Tests should follow Arrange-Act-Assert with unique test data per test.",
+      "files": [],
+      "expectations": [
+        "The response selects only the API layer and does NOT write unit or integration or E2E tests",
+        "API tests cover all 5 scenarios: 200 success, 401 unauthorized, 403 forbidden (different user), 404 not found, 400 validation error",
+        "Test file uses Playwright's APIRequestContext (e.g., `request` fixture), not fetch or axios",
+        "The test file creates a test-owned interface or type for the update payload — it does NOT import UpdateUserDto from the backend",
+        "Each test creates its own user (no shared state between tests) using a helper like authenticateUser()",
+        "Cleanup runs in afterEach to delete created users/data even when tests throw",
+        "Test data uses unique values (counter + timestamp or random) to avoid conflicts in parallel runs"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I added a login form to my Next.js app. The form has email and password fields and submits to /api/auth/login. After successful login the user is redirected to /dashboard. If credentials are wrong it shows an error message 'Invalid email or password'. The form has data-testid='login-form', data-testid='email-input', data-testid='password-input', data-testid='submit-button', data-testid='error-message'. Write E2E tests for the login flow.",
+      "expected_output": "E2E tests using Playwright with chromium project. Tests should cover: successful login → redirect to /dashboard, failed login → error message displayed, empty form submission → validation. The skill should create a Page Object Model for the login page using data-testid selectors, use API-based setup (not UI-based) to create users, inject auth cookies where needed, and avoid any static waits. No unit/integration/API tests since the ask is specifically E2E.",
+      "files": [],
+      "expectations": [
+        "The response selects only the E2E layer and does NOT write unit, integration, or API tests",
+        "A Page Object Model (POM) class is created for the login page with methods and locators using data-testid selectors only (no CSS class selectors or XPath)",
+        "The POM class has at least: a locator for the form, email input, password input, submit button, and error message",
+        "Test for successful login: creates user via API (not via UI), navigates to login page, fills form, submits, asserts redirect to /dashboard using page.waitForURL() or expect(page).toHaveURL()",
+        "Test for failed login: attempts login with wrong credentials, asserts error message is visible using locator assertion (not page.waitForTimeout)",
+        "Test data uses unique values per test (counter/timestamp pattern) — no hardcoded test@example.com",
+        "Cleanup of created test users runs in afterEach"
+      ]
+    }
+  ]
+}

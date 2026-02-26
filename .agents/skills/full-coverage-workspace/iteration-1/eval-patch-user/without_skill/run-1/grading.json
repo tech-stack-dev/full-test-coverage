@@ -1,0 +1,70 @@
+{
+  "expectations": [
+    {
+      "text": "The response selects only the API layer and does NOT write unit or integration or E2E tests",
+      "passed": false,
+      "evidence": "The output is a Jest unit/handler test that directly imports and calls `PATCH` from the route handler. This is NOT an API test (HTTP-level via Playwright). It directly calls the function with mock sessions — more accurately a handler integration/unit test."
+    },
+    {
+      "text": "API tests cover all 5 scenarios: 200 success, 401 unauthorized, 403 forbidden (different user), 404 not found, 400 validation error",
+      "passed": true,
+      "evidence": "The Jest test covers all 5 status codes: 401 (no session), 400 (invalid body), 403 (different user), 404 (updateUser returns null), 200 (success). All present."
+    },
+    {
+      "text": "Test file uses Playwright's APIRequestContext (e.g., `request` fixture), not fetch or axios",
+      "passed": false,
+      "evidence": "Uses Jest with `jest.mock('next-auth')` and `jest.mock('@/services/userService')`. No Playwright, no APIRequestContext. Imports and directly calls the handler function."
+    },
+    {
+      "text": "The test file creates a test-owned interface or type for the update payload — it does NOT import UpdateUserDto from the backend",
+      "passed": false,
+      "evidence": "Line 7: `import { UpdateUserDto } from '@/dto/UpdateUserDto';` — this imports the backend DTO directly."
+    },
+    {
+      "text": "Each test creates its own user (no shared state between tests) using a helper like authenticateUser()",
+      "passed": false,
+      "evidence": "No user creation. Uses `mockGetServerSession.mockResolvedValue({ userId: 'user-123' })` — hardcoded mock session. Shared constants USER_ID = 'user-123', OTHER_USER_ID = 'user-xyz-999', NOTE_ID = 'note-id-001' at module level."
+    },
+    {
+      "text": "Cleanup runs in afterEach to delete created users/data even when tests throw",
+      "passed": false,
+      "evidence": "afterEach only calls `jest.clearAllMocks()`. No database or user cleanup because no real users were created."
+    },
+    {
+      "text": "Test data uses unique values (counter + timestamp or random) to avoid conflicts in parallel runs",
+      "passed": false,
+      "evidence": "All IDs are hardcoded strings: 'user-123', 'user-abc-123', 'user-xyz-999', 'note-id-001', 'alice@example.com'. No counter or timestamp pattern."
+    }
+  ],
+  "summary": {
+    "passed": 1,
+    "failed": 6,
+    "total": 7,
+    "pass_rate": 0.14
+  },
+  "execution_metrics": {
+    "tool_calls": {"Read": 0, "Write": 2, "Edit": 0, "Bash": 0, "Glob": 0, "Grep": 0},
+    "total_tool_calls": 2,
+    "total_steps": 1,
+    "files_created": ["test_output.md", "transcript.md"],
+    "errors_encountered": 0,
+    "output_chars": 5980,
+    "transcript_chars": 1200
+  },
+  "timing": {
+    "executor_duration_seconds": 60.7,
+    "total_duration_seconds": 60.7
+  },
+  "claims": [
+    {
+      "claim": "Without-skill test is actually a unit/handler test, not an API test",
+      "type": "quality",
+      "verified": true,
+      "evidence": "Imports PATCH handler directly, mocks getServerSession and userService at module level with jest.mock, constructs Request objects manually. This tests the handler function in isolation, not via HTTP."
+    }
+  ],
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "Only 1/7 assertions passed. The most critical failure is using Jest handler mocking instead of Playwright API testing. This is exactly the discriminator the eval is designed to test."
+  }
+}

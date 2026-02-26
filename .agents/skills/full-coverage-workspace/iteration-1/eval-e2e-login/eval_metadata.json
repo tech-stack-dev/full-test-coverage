@@ -1,0 +1,14 @@
+{
+  "eval_id": 3,
+  "eval_name": "e2e-login",
+  "prompt": "I added a login form to my Next.js app. The form has email and password fields and submits to /api/auth/login. After successful login the user is redirected to /dashboard. If credentials are wrong it shows an error message 'Invalid email or password'. The form has data-testid='login-form', data-testid='email-input', data-testid='password-input', data-testid='submit-button', data-testid='error-message'. Write E2E tests for the login flow.",
+  "assertions": [
+    "The response selects only the E2E layer and does NOT write unit, integration, or API tests",
+    "A Page Object Model (POM) class is created for the login page with methods and locators using data-testid selectors only (no CSS class selectors or XPath)",
+    "The POM class has at least: a locator for the form, email input, password input, submit button, and error message",
+    "Test for successful login: creates user via API (not via UI), navigates to login page, fills form, submits, asserts redirect to /dashboard using page.waitForURL() or expect(page).toHaveURL()",
+    "Test for failed login: attempts login with wrong credentials, asserts error message is visible using locator assertion (not page.waitForTimeout)",
+    "Test data uses unique values per test (counter/timestamp pattern) — no hardcoded test@example.com",
+    "Cleanup of created test users runs in afterEach"
+  ]
+}

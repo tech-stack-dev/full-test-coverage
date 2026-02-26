@@ -1,0 +1,16 @@
+{
+  "eval_id": 1,
+  "eval_name": "crud-notes",
+  "prompt": "I just wrote a notes service with create, read, update, and delete endpoints. Here's the code:\n\n```typescript\n// notes.dto.ts\nimport { z } from 'zod';\nexport const CreateNoteDto = z.object({\n  title: z.string().min(1).max(255),\n  content: z.string().optional(),\n  organizationId: z.string().uuid()\n});\nexport type CreateNoteInput = z.infer<typeof CreateNoteDto>;\n\n// notes.service.ts\nexport class NotesService {\n  constructor(private prisma: PrismaClient) {}\n  async createNote(data: CreateNoteInput, userId: string) {\n    return this.prisma.note.create({ data: { ...data, userId } });\n  }\n  async getNote(id: string, userId: string) {\n    const note = await this.prisma.note.findUnique({ where: { id } });\n    if (!note) throw new NotFoundError('Note not found');\n    if (note.userId !== userId) throw new ForbiddenError('Access denied');\n    return note;\n  }\n  async updateNote(id: string, data: Partial<CreateNoteInput>, userId: string) {\n    const note = await this.getNote(id, userId);\n    return this.prisma.note.update({ where: { id: note.id }, data });\n  }\n  async deleteNote(id: string, userId: string) {\n    await this.getNote(id, userId);\n    return this.prisma.note.delete({ where: { id } });\n  }\n}\n\n// app/api/notes/route.ts\nexport async function POST(request: Request) {\n  const body = await request.json();\n  const parsed = CreateNoteDto.safeParse(body);\n  if (!parsed.success) return Response.json({ error: 'VALIDATION_ERROR', details: parsed.error.flatten() }, { status: 400 });\n  const note = await notesService.createNote(parsed.data, session.userId);\n  return Response.json(note, { status: 201 });\n}\n```\n\nAdd full test coverage for this notes module.",
+  "assertions": [
+    "The response selects Unit, Integration, and API layers and explicitly states E2E is skipped because no browser UI exists",
+    "Unit tests include exhaustive Zod field tests: title missing/empty/too-long (>255 chars)/valid-boundary (1 char, 255 chars), organizationId invalid UUID, organizationId missing",
+    "Unit tests for NotesService.getNote include: a test for the notFound branch (mock returns null → expect NotFoundError thrown) and a test for the forbidden branch (mock returns note with different userId → expect ForbiddenError thrown)",
+    "Unit tests use vi.mock for Prisma and verify mock was called with exact expected arguments",
+    "Unit tests create a unit factory file (e.g., notes.unit-factory.ts) for generating test data",
+    "Integration tests test service methods with real DB, not just HTTP endpoints",
+    "API tests cover at least: POST success (201), POST with missing title (400 with VALIDATION_ERROR), POST without auth (401)",
+    "All test files follow Arrange-Act-Assert pattern with clear sections",
+    "The response includes a file inventory listing all created test files per layer with run commands"
+  ]
+}

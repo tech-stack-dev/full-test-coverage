@@ -1,0 +1,403 @@
+{
+  "metadata": {
+    "skill_name": "full-coverage",
+    "skill_path": ".agents/skills/full-coverage",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-02-26T16:03:52Z",
+    "evals_run": [
+      1,
+      2,
+      3
+    ],
+    "runs_per_configuration": 3
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.33,
+        "passed": 3,
+        "failed": 6,
+        "total": 9,
+        "time_seconds": 76.6,
+        "tokens": 0,
+        "tool_calls": 7,
+        "errors": 1
+      },
+      "expectations": [
+        {
+          "text": "The response selects Unit, Integration, and API layers and explicitly states E2E is skipped because no browser UI exists",
+          "passed": false,
+          "evidence": "Agent was cut off by rate limit before completing. No transcript.md was produced. The schema test was created but no explicit layer selection or E2E skip reasoning is present anywhere in the outputs."
+        },
+        {
+          "text": "Unit tests include exhaustive Zod field tests: title missing/empty/too-long (>255 chars)/valid-boundary (1 char, 255 chars), organizationId invalid UUID, organizationId missing",
+          "passed": true,
+          "evidence": "notes.schema.test.ts covers: title missing (expectInvalid), undefined (expectInvalid), null (expectInvalid), wrong type/number (expectInvalid), empty string 0 chars (expectInvalid), 1-char (expectValid), 255-char (expectValid), 256-char (expectInvalid); organizationId missing (expectInvalid), undefined (expectInvalid), null (expectInvalid), not-a-uuid (expectInvalid), wrong type (expectInvalid)."
+        },
+        {
+          "text": "Unit tests for NotesService.getNote include: a test for the notFound branch (mock returns null \u2192 expect NotFoundError thrown) and a test for the forbidden branch (mock returns note with different userId \u2192 expect ForbiddenError thrown)",
+          "passed": false,
+          "evidence": "No service test file was created. The agent was cut off after creating schema test, factory, and helper \u2014 before writing the service test."
+        },
+        {
+          "text": "Unit tests use vi.mock for Prisma and verify mock was called with exact expected arguments",
+          "passed": false,
+          "evidence": "No service test file was created. Cannot verify mocking approach."
+        },
+        {
+          "text": "Unit tests create a unit factory file (e.g., notes.unit-factory.ts) for generating test data",
+          "passed": true,
+          "evidence": "tests-unit/factories/notes/notes.unit-factory.ts was created. Contains valid.complete(), valid.minimal(), valid.titleAtMin(), valid.atMaxLength(), invalid.missingTitle(), invalid.emptyTitle(), invalid.titleOneOverMax(), invalid.nullTitle(), invalid.undefinedTitle(), invalid.titleWrongType(), invalid.missingOrganizationId(), and more."
+        },
+        {
+          "text": "Integration tests test service methods with real DB, not just HTTP endpoints",
+          "passed": false,
+          "evidence": "No integration tests were created. Agent was cut off before reaching that layer."
+        },
+        {
+          "text": "API tests cover at least: POST success (201), POST with missing title (400 with VALIDATION_ERROR), POST without auth (401)",
+          "passed": false,
+          "evidence": "No API tests were created. Agent was cut off before reaching that layer."
+        },
+        {
+          "text": "All test files follow Arrange-Act-Assert pattern with clear sections",
+          "passed": true,
+          "evidence": "notes.schema.test.ts uses expectValid()/expectInvalid() helpers with clean describe/it structure and a case tree comment block at the top. The schema.helper.ts was also created with properly structured helpers."
+        },
+        {
+          "text": "The response includes a file inventory listing all created test files per layer with run commands",
+          "passed": false,
+          "evidence": "No transcript.md was created. Agent was cut off before summarizing. No file inventory present."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 7,
+        "failed": 0,
+        "total": 7,
+        "time_seconds": 57.0,
+        "tokens": 8900,
+        "tool_calls": 3,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The response selects only the E2E layer and does NOT write unit, integration, or API tests",
+          "passed": true,
+          "evidence": "test_output.md contains exclusively E2E files: login.page.ts (POM), user.factory.ts, auth.setup.ts, user.cleanup.ts, auth.login.spec.ts. Opening note says 'Generated following the full-coverage skill E2E workflow'. No unit, integration, or API tests."
+        },
+        {
+          "text": "A Page Object Model (POM) class is created for the login page with methods and locators using data-testid selectors only (no CSS class selectors or XPath)",
+          "passed": true,
+          "evidence": "e2e/pages/auth/login.page.ts defines class LoginPage with all locators using page.getByTestId('login-form'), page.getByTestId('email-input'), page.getByTestId('password-input'), page.getByTestId('submit-button'), page.getByTestId('error-message'). No CSS selectors or XPath."
+        },
+        {
+          "text": "The POM class has at least: a locator for the form, email input, password input, submit button, and error message",
+          "passed": true,
+          "evidence": "LoginPage constructor defines: loginForm, emailInput, passwordInput, submitButton, errorMessage \u2014 all 5 required locators present."
+        },
+        {
+          "text": "Test for successful login: creates user via API (not via UI), navigates to login page, fills form, submits, asserts redirect to /dashboard using page.waitForURL() or expect(page).toHaveURL()",
+          "passed": true,
+          "evidence": "Test 'should redirect to /dashboard after successful login': calls createUserViaApi(page.request, ...) to create user via API, calls loginPage.goto(), loginPage.login(email, password), asserts `await expect(page).toHaveURL('/dashboard')`."
+        },
+        {
+          "text": "Test for failed login: attempts login with wrong credentials, asserts error message is visible using locator assertion (not page.waitForTimeout)",
+          "passed": true,
+          "evidence": "Test 'should show error message when credentials are invalid': uses loginPage.login(testUser.email, 'WrongPassword999!'), asserts `await expect(loginPage.errorMessage).toBeVisible()` and `await expect(loginPage.errorMessage).toHaveText('Invalid email or password')`. No page.waitForTimeout."
+        },
+        {
+          "text": "Test data uses unique values per test (counter/timestamp pattern) \u2014 no hardcoded test@example.com",
+          "passed": true,
+          "evidence": "user.factory.ts createTestUser() uses counter++ and uniqueSuffix() = Date.now() + Math.floor(Math.random() * 100000). Email: `e2e-login-${counter}-${suffix}@test.com`. auth.setup.ts createUserViaApi() uses userCounter + timestamp + random."
+        },
+        {
+          "text": "Cleanup of created test users runs in afterEach",
+          "passed": true,
+          "evidence": "test.afterEach in auth.login.spec.ts iterates cookiesToCleanup and calls cleanupUser(request, cookie) for each, then resets array to length 0. Cookie is pushed to cookiesToCleanup immediately after createUserViaApi."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 7,
+        "failed": 0,
+        "total": 7,
+        "time_seconds": 102.9,
+        "tokens": 13200,
+        "tool_calls": 4,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The response selects only the API layer and does NOT write unit or integration or E2E tests",
+          "passed": true,
+          "evidence": "test_output.md contains exclusively API test files (types.ts, auth.helper.ts, response.helper.ts, factory, api-utils, cleanup, spec). No unit tests, no integration test with real DB, no E2E. The transcript.md confirms layer selection."
+        },
+        {
+          "text": "API tests cover all 5 scenarios: 200 success, 401 unauthorized, 403 forbidden (different user), 404 not found, 400 validation error",
+          "passed": true,
+          "evidence": "patch-users-id.spec.ts has 6 tests: (1) 200 happy path, (2) 200 write verification PATCH\u2192GET, (3) 401 no auth, (4) 403 user B patches user A, (5) 404 delete-then-patch, (6) 400 invalid body. All 5 required scenarios covered."
+        },
+        {
+          "text": "Test file uses Playwright's APIRequestContext (e.g., `request` fixture), not fetch or axios",
+          "passed": true,
+          "evidence": "test_output.md File 2 auth.helper.ts imports `APIRequestContext` from '@playwright/test' and uses `request.post()`. The spec imports from '@playwright/test' and uses the `request` fixture. No fetch or axios."
+        },
+        {
+          "text": "The test file creates a test-owned interface or type for the update payload \u2014 it does NOT import UpdateUserDto from the backend",
+          "passed": true,
+          "evidence": "File 4 users.factory.ts defines `interface UpdateUserPayload { name?: string; email?: string }` locally. No import from backend path. Comment says 'Test-owned interfaces \u2014 derived by reading the handler's UpdateUserDto contract, then defining an independent copy. Never import from @/src/modules/'."
+        },
+        {
+          "text": "Each test creates its own user (no shared state between tests) using a helper like authenticateUser()",
+          "passed": true,
+          "evidence": "Every test calls `await authenticateUser(request)` locally within the test body. No beforeAll, no shared cookie variable across tests."
+        },
+        {
+          "text": "Cleanup runs in afterEach to delete created users/data even when tests throw",
+          "passed": true,
+          "evidence": "test.afterEach iterates over cookiesToCleanup and calls cleanupUser(request, cookie) for each, then resets the array. cookiesToCleanup.push(cookie) immediately after each authenticateUser() call."
+        },
+        {
+          "text": "Test data uses unique values (counter + timestamp or random) to avoid conflicts in parallel runs",
+          "passed": true,
+          "evidence": "users.factory.ts uniqueSuffix(): counter++ + Date.now() + Math.floor(Math.random() * 100000). Email in auth.helper.ts: `test-${userCounter}-${timestamp}-${random}@test.com`."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.33,
+        "passed": 3,
+        "failed": 6,
+        "total": 9,
+        "time_seconds": 85.9,
+        "tokens": 25360,
+        "tool_calls": 3,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The response selects Unit, Integration, and API layers and explicitly states E2E is skipped because no browser UI exists",
+          "passed": false,
+          "evidence": "Produced 3 flat test files (notes.dto.test.ts, notes.service.test.ts, notes.route.test.ts) with no layer selection, no pyramid reasoning, no mention of E2E being skipped. No structured analysis precedes the code."
+        },
+        {
+          "text": "Unit tests include exhaustive Zod field tests: title missing/empty/too-long (>255 chars)/valid-boundary (1 char, 255 chars), organizationId invalid UUID, organizationId missing",
+          "passed": true,
+          "evidence": "notes.dto.test.ts covers: empty title, >255 chars, 255 chars, 1 char, missing title, non-string title; missing organizationId, non-UUID, empty string UUID, malformed UUID."
+        },
+        {
+          "text": "Unit tests for NotesService.getNote include: a test for the notFound branch (mock returns null \u2192 expect NotFoundError thrown) and a test for the forbidden branch (mock returns note with different userId \u2192 expect ForbiddenError thrown)",
+          "passed": true,
+          "evidence": "notes.service.test.ts line 124: 'throws NotFoundError when note does not exist' with findUnique returning null. Line 136: 'throws ForbiddenError when note belongs to a different user' with findUnique returning baseNote where userId !== OTHER_USER_ID."
+        },
+        {
+          "text": "Unit tests use vi.mock for Prisma and verify mock was called with exact expected arguments",
+          "passed": false,
+          "evidence": "Uses jest.fn() and jest.mock() (not vi.mock), and uses jest.clearAllMocks() in afterEach. The assertion specifically requires vi.mock from Vitest. Also uses Jest's mockResolvedValue rather than vi.fn().mockResolvedValue."
+        },
+        {
+          "text": "Unit tests create a unit factory file (e.g., notes.unit-factory.ts) for generating test data",
+          "passed": false,
+          "evidence": "No factory file created. Test data is defined as inline constants (validInput, baseNote) inside the test files."
+        },
+        {
+          "text": "Integration tests test service methods with real DB, not just HTTP endpoints",
+          "passed": false,
+          "evidence": "No integration test files present. The notes.service.test.ts uses mocked Prisma (jest.fn()), not a real DB."
+        },
+        {
+          "text": "API tests cover at least: POST success (201), POST with missing title (400 with VALIDATION_ERROR), POST without auth (401)",
+          "passed": false,
+          "evidence": "notes.route.test.ts covers 201 Created and 400 Validation Error. However there is no 401 test \u2014 the provided handler code uses `session.userId` without a null check, so the without-skill agent correctly didn't invent a 401 scenario. The assertion requires all three. FAIL."
+        },
+        {
+          "text": "All test files follow Arrange-Act-Assert pattern with clear sections",
+          "passed": true,
+          "evidence": "notes.service.test.ts and notes.route.test.ts use describe/it blocks with reasonably clear separation. notes.route.test.ts uses section comments (// 201 Created, // 400 Validation Error)."
+        },
+        {
+          "text": "The response includes a file inventory listing all created test files per layer with run commands",
+          "passed": false,
+          "evidence": "No transcript.md or summary was produced. The output is raw test files with no layer inventory or run commands."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.29,
+        "passed": 2,
+        "failed": 5,
+        "total": 7,
+        "time_seconds": 56.4,
+        "tokens": 7800,
+        "tool_calls": 2,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The response selects only the E2E layer and does NOT write unit, integration, or API tests",
+          "passed": true,
+          "evidence": "test_output.md contains only Playwright test code for the login flow. No unit tests or integration tests."
+        },
+        {
+          "text": "A Page Object Model (POM) class is created for the login page with methods and locators using data-testid selectors only (no CSS class selectors or XPath)",
+          "passed": false,
+          "evidence": "No Page Object Model class was created. The test file calls page.getByTestId() directly inline within each test. There is no LoginPage class or equivalent POM."
+        },
+        {
+          "text": "The POM class has at least: a locator for the form, email input, password input, submit button, and error message",
+          "passed": false,
+          "evidence": "No POM class exists. locators appear inline in each test, not as a reusable class."
+        },
+        {
+          "text": "Test for successful login: creates user via API (not via UI), navigates to login page, fills form, submits, asserts redirect to /dashboard using page.waitForURL() or expect(page).toHaveURL()",
+          "passed": false,
+          "evidence": "The 'redirect to /dashboard' test uses page.route() to mock the /api/auth/login response instead of creating a real user via API. Line 28-34: `await page.route('/api/auth/login', async (route) => { await route.fulfill({ status: 200, ... }) })`. This is mocked UI testing, not real API setup."
+        },
+        {
+          "text": "Test for failed login: attempts login with wrong credentials, asserts error message is visible using locator assertion (not page.waitForTimeout)",
+          "passed": true,
+          "evidence": "Test 'should show error message on invalid credentials': mocks 401 response, fills form, `await expect(errorMessage).toBeVisible()`, `await expect(errorMessage).toHaveText('Invalid email or password')`. Uses locator assertions, no waitForTimeout."
+        },
+        {
+          "text": "Test data uses unique values per test (counter/timestamp pattern) \u2014 no hardcoded test@example.com",
+          "passed": false,
+          "evidence": "All emails are hardcoded: 'user@example.com', 'admin@example.com', 'wrong@example.com', 'test@example.com', 'nonexistent-e2e@test.com'. No counter or timestamp pattern."
+        },
+        {
+          "text": "Cleanup of created test users runs in afterEach",
+          "passed": false,
+          "evidence": "No afterEach cleanup. Tests use beforeEach only for navigation (await page.goto('/login')). Since no real users are created (all API calls are mocked via page.route()), cleanup is not needed \u2014 but this is because the test approach is wrong."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.14,
+        "passed": 1,
+        "failed": 6,
+        "total": 7,
+        "time_seconds": 60.7,
+        "tokens": 5980,
+        "tool_calls": 2,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The response selects only the API layer and does NOT write unit or integration or E2E tests",
+          "passed": false,
+          "evidence": "The output is a Jest unit/handler test that directly imports and calls `PATCH` from the route handler. This is NOT an API test (HTTP-level via Playwright). It directly calls the function with mock sessions \u2014 more accurately a handler integration/unit test."
+        },
+        {
+          "text": "API tests cover all 5 scenarios: 200 success, 401 unauthorized, 403 forbidden (different user), 404 not found, 400 validation error",
+          "passed": true,
+          "evidence": "The Jest test covers all 5 status codes: 401 (no session), 400 (invalid body), 403 (different user), 404 (updateUser returns null), 200 (success). All present."
+        },
+        {
+          "text": "Test file uses Playwright's APIRequestContext (e.g., `request` fixture), not fetch or axios",
+          "passed": false,
+          "evidence": "Uses Jest with `jest.mock('next-auth')` and `jest.mock('@/services/userService')`. No Playwright, no APIRequestContext. Imports and directly calls the handler function."
+        },
+        {
+          "text": "The test file creates a test-owned interface or type for the update payload \u2014 it does NOT import UpdateUserDto from the backend",
+          "passed": false,
+          "evidence": "Line 7: `import { UpdateUserDto } from '@/dto/UpdateUserDto';` \u2014 this imports the backend DTO directly."
+        },
+        {
+          "text": "Each test creates its own user (no shared state between tests) using a helper like authenticateUser()",
+          "passed": false,
+          "evidence": "No user creation. Uses `mockGetServerSession.mockResolvedValue({ userId: 'user-123' })` \u2014 hardcoded mock session. Shared constants USER_ID = 'user-123', OTHER_USER_ID = 'user-xyz-999', NOTE_ID = 'note-id-001' at module level."
+        },
+        {
+          "text": "Cleanup runs in afterEach to delete created users/data even when tests throw",
+          "passed": false,
+          "evidence": "afterEach only calls `jest.clearAllMocks()`. No database or user cleanup because no real users were created."
+        },
+        {
+          "text": "Test data uses unique values (counter + timestamp or random) to avoid conflicts in parallel runs",
+          "passed": false,
+          "evidence": "All IDs are hardcoded strings: 'user-123', 'user-abc-123', 'user-xyz-999', 'note-id-001', 'alice@example.com'. No counter or timestamp pattern."
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 0.7767,
+        "stddev": 0.3868,
+        "min": 0.33,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 78.8333,
+        "stddev": 23.0314,
+        "min": 57.0,
+        "max": 102.9
+      },
+      "tokens": {
+        "mean": 7366.6667,
+        "stddev": 6732.2606,
+        "min": 0,
+        "max": 13200
+      }
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.2533,
+        "stddev": 0.1002,
+        "min": 0.14,
+        "max": 0.33
+      },
+      "time_seconds": {
+        "mean": 67.6667,
+        "stddev": 15.9362,
+        "min": 56.4,
+        "max": 85.9
+      },
+      "tokens": {
+        "mean": 13046.6667,
+        "stddev": 10702.4172,
+        "min": 5980,
+        "max": 25360
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.52",
+      "time_seconds": "+11.2",
+      "tokens": "-5680"
+    }
+  },
+  "notes": []
+}
