@@ -255,10 +255,10 @@ After all layers are complete, verify the pyramid is correctly shaped:
 - [ ] E2E tests cover user journeys and navigation — no field validation
 
 **Pyramid shape (count tests per layer):**
-- [ ] Unit tests are the largest group (60–70% of total)
-- [ ] Integration tests are the second largest (20–25%)
-- [ ] API tests are smaller (10–15%)
-- [ ] E2E tests are the fewest (5–10%)
+- [ ] Unit tests cover the most cases — exhaustive per field and per branch
+- [ ] Integration tests are fewer — only real DB wiring and auth paths
+- [ ] API tests are fewer still — one spec per endpoint
+- [ ] E2E tests are the fewest — one spec per user journey
 
 **All self-validation checklists were run:**
 - [ ] Unit layer checklist ✓

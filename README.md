@@ -22,7 +22,6 @@ The skill follows the **testing pyramid**: more unit tests, fewer E2E tests, wit
         ╠═══════════════════════╣
         ║    Unit Tests         ║  Vitest · isolated logic, all deps mocked
         ╚═══════════════════════╝
-           60–70%    20–25%    10–15%   5–10%  ← target test distribution
 ```
 
 ### Layer selection
