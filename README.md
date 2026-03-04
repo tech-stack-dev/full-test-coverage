@@ -1,11 +1,11 @@
-# full-coverage
+# full-test-coverage
 
 A Claude Code skill that generates complete, pyramid-shaped test suites for any backend module, API endpoint, or full-stack feature. Point it at your code and it reads the source, selects only the layers you need, and writes every test file — schema tests, service tests, API specs, E2E flows — following strict Vitest and Playwright patterns.
 
 ## Install
 
 ```bash
-npx skills add tech-stack-dev/full-coverage-skill
+npx skills add tech-stack-dev/full-test-coverage-skill
 ```
 
 ## What it does
@@ -110,7 +110,7 @@ Claude Code, Cursor, GitHub Copilot, Cline
 ## Repository structure
 
 ```
-.agents/skills/full-coverage/
+.agents/skills/full-test-coverage/
 ├── SKILL.md                        # Orchestration: pyramid, layer selection, universal patterns
 └── references/
     ├── unit-testing.md             # 8-step workflow, schema helper, factory, mocking patterns
@@ -118,7 +118,7 @@ Claude Code, Cursor, GitHub Copilot, Cline
     ├── api-testing.md              # Response helpers, API utilities, per-endpoint test counts
     └── e2e-testing.md              # Page Object Model, waiting strategy, auth injection
 
-full-coverage.skill                 # Packaged skill — ready to install
+full-test-coverage.skill            # Packaged skill — ready to install
 skills-lock.json                    # Skill dependencies
 temp/                               # Source material used to author the skill
 .agents/skills/full-coverage-workspace/  # Eval runs and benchmark results
