@@ -61,6 +61,7 @@ tests-api/
 |------|---------|---------|
 | Test file | `<method>-<endpoint>.spec.ts` | `post-notes.spec.ts` |
 | Parameterized test file | `<method>-<resource>-<param>.spec.ts` | `get-notes-id.spec.ts` |
+| Action/custom endpoint | `<method>-<resource>-<param>-<action>.spec.ts` | `post-notes-id-publish.spec.ts` |
 | Describe string (flat) | `"<METHOD> /api/<resource>"` | `"GET /api/notes"` |
 | Describe string (parameterized) | `"<METHOD> /api/<resource>/[<param>]"` | `"GET /api/notes/[id]"` |
 | API utility function | `execute<Method><Resource>Request` | `executeGetNotesRequest` |
@@ -81,6 +82,14 @@ While reading route handlers, explicitly identify every 400 source:
 - Zod `.parse()` / `.safeParse()` failure → `VALIDATION_ERROR` → use `expect400ValidationError`
 - `Errors.badRequest()` manual guard → `BAD_REQUEST` → use `expect400BadRequest`
 
+After reading all route handlers, write an explicit endpoint inventory:
+```
+METHOD /path/to/endpoint
+METHOD /path/to/endpoint
+...
+```
+One line per endpoint. This inventory drives Step 7 — every entry must get a spec file.
+
 **Step 2 — Verify response helpers**
 For every error code the module can return, confirm a corresponding helper exists in `tests-api/helpers/response.helper.ts`. Create missing helpers before proceeding.
 
@@ -96,13 +105,8 @@ Create `tests-api/enums/<concept>.enum.ts` only when: value is defined by the ba
 **Step 6 — Create cleanup**
 `tests-api/cleanups/<domain>.cleanup.ts` — cover all entity types created by this domain's tests.
 
-**Step 7 — Write test specs** (process in order):
-1. `get-<resource>.spec.ts` (list)
-2. `get-<resource>-id.spec.ts` (by ID)
-3. `post-<resource>.spec.ts` (create)
-4. `patch-<resource>-id.spec.ts` / `put-<resource>-id.spec.ts` (update)
-5. `delete-<resource>-id.spec.ts` (delete)
-6. Nested/special endpoints last
+**Step 7 — Write test specs**
+Work through the endpoint inventory from Step 1. Write one spec file per endpoint. Do not skip any entry.
 
 For each file: **Step 7a** (plan scenarios as comments) then **Step 7b** (implement). Do not write any code until 7a is done.
 
@@ -558,6 +562,7 @@ For each endpoint, generate tests covering:
 | POST | 4–5 | 1 happy path, 1 persistence verify (POST→GET), 1 auth (401), 1 validation (400) |
 | PATCH/PUT | 6–7 | 1 happy path, 1 persistence verify, 1–2 partial update, 1 auth (401), 1 cross-org (403), 1 not found (404), 1 validation (400) |
 | DELETE | 4–5 | 1 happy path, 1 deletion verify (DELETE→GET 404), 1 auth (401), 1 cross-org (403), 1 not found (404) |
+| Action/custom endpoint | 2+ | 1 happy path, 1 auth (401) — add 403/404/400 per the checklist above if the route returns them |
 
 If count exceeds range, write an inline justification comment per extra scenario. No justification = remove the scenario.
 
@@ -585,6 +590,7 @@ If count exceeds range, write an inline justification comment per extra scenario
 
 ## Self-Validation Checklist
 
+- [ ] Every endpoint from the Step 1 inventory has a corresponding spec file — none skipped
 - [ ] Every `authenticateUser()` immediately followed by `cookiesToCleanup.push(cookie)`
 - [ ] `test.afterEach` destructures `{ request }` and iterates auth tracking array — domain cleanup + user cleanup per cookie
 - [ ] Every `test()` destructures `{ request }` and passes it to all api-utils and auth calls
