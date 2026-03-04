@@ -1,4 +1,4 @@
-# Skill Benchmark: full-coverage
+# Skill Benchmark: full-test-coverage
 
 **Model**: <model-name>
 **Date**: 2026-02-26T16:03:52Z

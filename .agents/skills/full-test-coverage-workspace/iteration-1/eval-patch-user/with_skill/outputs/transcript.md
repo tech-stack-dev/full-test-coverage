@@ -2,10 +2,10 @@
 
 ## Files Read
 
-1. `/Users/vitaliidolotov/VSCodeProjects/full-coverage-tests/.agents/skills/full-coverage/SKILL.md`
+1. `/Users/vitaliidolotov/VSCodeProjects/full-coverage-tests/.agents/skills/full-test-coverage/SKILL.md`
    - Provides the testing pyramid, layer selection decision tree, and step-by-step workflow.
 
-2. `/Users/vitaliidolotov/VSCodeProjects/full-coverage-tests/.agents/skills/full-coverage/references/api-testing.md`
+2. `/Users/vitaliidolotov/VSCodeProjects/full-coverage-tests/.agents/skills/full-test-coverage/references/api-testing.md`
    - Provides verbatim templates, naming conventions, per-endpoint checklist, and self-validation checklist for API tests.
 
 ---

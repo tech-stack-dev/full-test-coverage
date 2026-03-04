@@ -121,7 +121,7 @@ Claude Code, Cursor, GitHub Copilot, Cline
 full-test-coverage.skill            # Packaged skill — ready to install
 skills-lock.json                    # Skill dependencies
 temp/                               # Source material used to author the skill
-.agents/skills/full-coverage-workspace/  # Eval runs and benchmark results
+.agents/skills/full-test-coverage-workspace/  # Eval runs and benchmark results
 ```
 
 ## Benchmark

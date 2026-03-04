@@ -1,6 +1,6 @@
 # E2E Tests — Login Flow
 
-Generated following the full-coverage skill E2E workflow. The login form is an auth flow, so user creation is done via API for tests that require a pre-existing user, and the UI itself is used only for the login interaction under test.
+Generated following the full-test-coverage skill E2E workflow. The login form is an auth flow, so user creation is done via API for tests that require a pre-existing user, and the UI itself is used only for the login interaction under test.
 
 ---
 

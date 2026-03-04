@@ -1,7 +1,7 @@
 {
   "metadata": {
-    "skill_name": "full-coverage",
-    "skill_path": ".agents/skills/full-coverage",
+    "skill_name": "full-test-coverage",
+    "skill_path": ".agents/skills/full-test-coverage",
     "executor_model": "<model-name>",
     "analyzer_model": "<model-name>",
     "timestamp": "2026-02-26T16:03:52Z",
@@ -94,7 +94,7 @@
         {
           "text": "The response selects only the E2E layer and does NOT write unit, integration, or API tests",
           "passed": true,
-          "evidence": "test_output.md contains exclusively E2E files: login.page.ts (POM), user.factory.ts, auth.setup.ts, user.cleanup.ts, auth.login.spec.ts. Opening note says 'Generated following the full-coverage skill E2E workflow'. No unit, integration, or API tests."
+          "evidence": "test_output.md contains exclusively E2E files: login.page.ts (POM), user.factory.ts, auth.setup.ts, user.cleanup.ts, auth.login.spec.ts. Opening note says 'Generated following the full-test-coverage skill E2E workflow'. No unit, integration, or API tests."
         },
         {
           "text": "A Page Object Model (POM) class is created for the login page with methods and locators using data-testid selectors only (no CSS class selectors or XPath)",
