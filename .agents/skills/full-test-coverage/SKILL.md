@@ -45,15 +45,16 @@ Each concern is owned by exactly one layer. Do not duplicate responsibilities.
 
 Before selecting layers or writing any tests, read the target code.
 
-**First, discover the full scope.** Do not assume a specific directory structure or file naming convention. Scan the codebase to find all source files relevant to the domain being analyzed. Look for:
-- HTTP route handlers (any file that registers or handles HTTP methods)
-- Service classes and business logic modules
-- Zod schemas and DTOs
-- Utility and helper modules
-- Serverless / background function handlers
-- Shared infrastructure (error handling, clients, middleware)
+**First, discover the full scope. Use the Explore agent** (subagent_type=Explore, thoroughness="very thorough") with the following prompt:
 
-Include every file with exported functions, classes, or schemas that belongs to the domain. The scan result defines the scope — do not skip files that don't match an expected naming pattern.
+> "Find all source files related to [domain keyword] in this repository. Search comprehensively:
+> - Files and directories whose name contains the keyword in any case variant (kebab-case, camelCase, snake_case)
+> - Files anywhere in the repo whose content references the domain — route registrations, class names, import paths
+> - HTTP route handlers, service classes, Zod schemas/DTOs, utility modules, serverless/Lambda handlers, shared infrastructure
+> - Follow import chains from every file found to include referenced schemas, services, clients, and error definitions
+> Do not restrict the search to src/ or any assumed directory. Return a complete list of files with a one-line description of each."
+
+Use the returned file list as the scope for all subsequent steps.
 
 Then read:
 - Zod schemas / DTOs
