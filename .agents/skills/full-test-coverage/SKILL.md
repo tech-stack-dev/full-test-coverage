@@ -48,12 +48,20 @@ Before selecting layers or writing any tests, read the target code.
 **First, discover the full scope using a keyword search.**
 
 1. Extract the domain keyword from the user's request (e.g. `audio-generation`, `user`, `invoice`).
-2. Search for all files whose name contains that keyword across the **entire repository** — not just `src/` or any assumed subdirectory.
+2. Search for all files whose name contains that keyword across the **entire repository** — not just `src/` or any assumed subdirectory. Also search for common variations: kebab-case, camelCase, snake_case (e.g. `audio-generation`, `audioGeneration`, `audio_generation`).
 3. For each file found, read its imports and add any referenced service files, schemas, DTOs, utilities, and error definitions to the scope.
 
 This surfaces files in any location: `functions/`, `lambdas/`, `handlers/`, monorepo packages, or non-standard directories. Do not skip a file just because it is outside an expected path.
 
-The files discovered this way — plus their direct imports — define the scope. Do not add files that are outside this set.
+Then broaden the search by file role. For each of the following, scan the full repo and include any matches that belong to the domain:
+- HTTP route handlers (any file that registers or handles HTTP methods)
+- Service classes and business logic modules
+- Zod schemas and DTOs
+- Utility and helper modules
+- Serverless / background function handlers
+- Shared infrastructure (error handling, clients, middleware)
+
+The files discovered by keyword search and role scan — plus their direct imports — define the scope. Do not skip files that don't match an expected naming pattern.
 
 Then read:
 - Zod schemas / DTOs
